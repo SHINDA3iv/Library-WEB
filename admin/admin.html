@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Административная страница</title>
+    <link rel="stylesheet" href="admin-style.css">
+</head>
+<body>
+    <div class="site-header">
+        <h1>Детали книги</h1>
+        <nav class="site-nav">
+            <a href="admin.html">Главная</a>
+        </nav>
+    </div>
+    <div class="container">
+        <h1>Административная страница</h1>
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('fileCatalog')">Каталог файлов</button>
+            <button class="tab-button" onclick="openTab('addFile')"> Добавление файла</button>
+            <button class="tab-button" onclick="openTab('downloadRanking')">Рейтинг скачиваний</button>
+        </div>
+        
+        <div id="fileCatalog" class="tab-content active">
+            <h2>Каталог файлов</h2>
+            <table id="file-table">
+                <thead>
+                    <tr>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <div id="file-pagination"></div>
+            <div id="file-select">
+                <select id="file-items-per-page">
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="15">15</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="addFile" class="tab-content">
+            <h2>Форма добавления файла</h2>
+            <form id="upload-form" enctype="multipart/form-data">
+                <input type="text" id="book-title" name="title" placeholder="Название книги" required>
+                <input type="text" id="author" name="author" placeholder="Автор" required>
+                <input type="text" id="genre" name="genre" placeholder="Жанр" required>
+                <input type="text" id="publisher" name="publisher" placeholder="Издатель" required>
+                <input type="number" id="publication-year" name="publication_year" placeholder="Год публикации" required>
+                <div class="file-input-group">
+                    <label for="file-upload">Файл книги:</label>
+                    <input type="file" id="file-upload" name="book_file" required>
+                </div>
+                <div class="image-input-group">
+                    <label for="image-upload">Файл изображения:</label>
+                    <input type="file" id="image-upload" name="image_file" required>
+                </div>
+                <button type="submit">Добавить</button>
+            </form>
+        </div>
+        
+        <div id="downloadRanking" class="tab-content">
+            <h2>Рейтинг скачиваний</h2>
+            <table id="ranking-table">
+                <thead>
+                    <tr>
+                        <th>Имя файла</th>
+                        <th>Количество скачиваний</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div id="ranking-pagination"></div>
+            <div id="ranking-select">
+                <select id="ranking-items-per-page">
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="15">15</option>
+                </select>
+            </div>
+        </div>        
+    </div>
+    <script src="admin-script.js"></script>
+</body>
+</html>

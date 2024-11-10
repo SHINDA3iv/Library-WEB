@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Библиотека книг</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="logo">
+            <h1>Библиотека книг</h1>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="about.html">О нас</a></li>
+                <li><a href="contact.html">Контакты</a></li>
+            </ul>
+        </nav>        
+    </header>
+    
+    <div class="container">
+        <h1>Библиотека книг</h1>
+        <button id="toggle-filter" class="toggle-filter-btn">Показать фильтры</button>
+
+        <div id="filter-container" class="filter-container hidden">
+            <form id="filter-form" class="filter-form">
+                <h2>Фильтры</h2>
+
+                <div class="filter-group">
+                    <label for="title">Название:</label>
+                    <input type="text" id="title" name="title" placeholder="Введите название">    
+                </div>
+                
+                <div class="filter-group">
+                    <label for="author">Автор:</label>
+                    <input type="text" id="author" name="author" placeholder="Введите автора"> 
+                </div>
+
+                <div class="filter-group">
+                    <label for="theme">Жанр:</label>
+                    <input type="text" id="theme" name="theme" placeholder="Введите жанр">
+                </div>
+
+                <div class="filter-group">
+                    <label for="year">Год:</label>
+                    <input type="text" id="year" name="year" placeholder="Введите год"> 
+                </div>
+
+                <button type="submit">Применить</button>
+            </form>
+        </div>
+
+        <div id="book-grid"></div>
+        <div id="pagination"></div>
+        <div id="select">
+            <select id="items-per-page">
+                <option value="3">3</option>
+                <option value="6" selected>6</option>
+                <option value="12">12</option>
+                <option value="18">18</option>
+            </select>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

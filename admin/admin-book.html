@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали книги</title>
+    <link rel="stylesheet" href="admin-style.css">
+</head>
+<body>
+    <div class="site-header">
+        <h1>Детали книги</h1>
+        <nav class="site-nav">
+            <a href="admin.html">Главная</a>
+        </nav>
+    </div>
+    
+    <div class="container book-details-container">
+        <div class="book-cover-wrapper">
+            <img id="book-cover" src="" alt="Обложка книги" width="240px">
+        </div>
+        <div class="book-info">
+            <h1 id="book-title">Название книги</h1>
+            <p><strong>Автор:</strong> <span id="book-author"></span></p>
+            <p><strong>Жанр:</strong> <span id="book-genre"></span></p>
+            <p><strong>Издатель:</strong> <span id="book-publisher"></span></p>
+            <p><strong>Год публикации:</strong> <span id="book-year"></span></p>
+            <p><strong>Загружено кем:</strong> <span id="book-uploaded-by"></span></p>
+            <p><strong>Путь к файлу:</strong> <span id="book-file-path"></span></p>
+        </div>
+    </div>
+
+    <div id="book-content" class="book-content">
+        <div id="txt-content" class="txt-content"></div>
+        <div id="pdf-content" class="pdf-content"></div>
+
+        <div class="page-nav">
+            <button class="page-nav-button" onclick="showPage(currentPageIndex - 1)">Предыдущая страница</button>
+        
+            <span>Страница</span>
+            <input type="number" id="page-input" value="1" min="1" onchange="goToPage()">
+            <span>из</span>
+            <span id="total-pages"></span>
+        
+            <button class="page-nav-button" onclick="showPage(currentPageIndex + 1)">Следующая страница</button>
+        </div>
+        
+    </div>
+    
+    <script src="admin-book.js"></script>
+</body>
+</html>

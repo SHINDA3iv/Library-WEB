@@ -1,0 +1,383 @@
+/* Основные стили для страницы */
+body {
+    font-family: Arial, sans-serif;
+    color: #333;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    padding-top: 60px;
+}
+
+/* Основной контейнер */
+.container {
+    max-width: 1000px;
+    margin: 1rem auto;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовки */
+h1 {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+    font-size: 36px;
+}
+
+h2 {
+    margin: 40px 0 20px 0;
+    text-align: center;
+    color: #333;
+}
+
+p {
+    font-size: 18px;
+    line-height: 1.5;
+    margin: 10px 0;
+}
+
+/* Стили для заголовка сайта */
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    background-color: #0056b3;
+    color: white;
+    padding: 15px 30px;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.site-header h1 {
+    margin: 0;
+    font-size: 26px;
+    color: white;
+}
+
+/* Стили для навигации */
+.site-nav a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s, background-color 0.3s;
+    margin-left: 20px;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.site-nav a:hover {
+    background-color: rgba(233, 233, 233, 0.5); 
+    color: #404040;
+}
+
+/* Книга - информация */
+@media (max-width: 768px) {
+    .book-details-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .book-info {
+        margin-top: 20px;
+        width: 100%;
+    }
+}
+
+.book-details-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
+}
+
+.book-cover {
+    width: 200px;
+    height: auto;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.book-cover-wrapper img {
+    width: 240px; 
+    height: 360px;
+    object-position: center;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.book-info {
+    flex: 1;
+    padding: 20px;
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.book-info h1 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.book-info p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.book-content {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.page {
+    margin-bottom: 20px;
+    display: none;
+}
+
+.page-nav {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.page-nav button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+}
+
+.page-nav button:hover {
+    background-color: #0056b3;
+}
+
+#txt-content pre,
+#pdf-content canvas {
+    word-wrap: break-word; 
+    overflow-wrap: break-word;
+}
+
+#txt-content pre {
+    white-space: pre-wrap;
+}
+
+#page-navigation-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#page-number-container {
+    margin-left: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#page-input {
+    width: 50px;
+    padding: 0.5em;
+}
+
+/* Таблицы */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    max-width: 1000px;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    text-overflow: ellipsis; 
+    overflow: hidden;
+    white-space: nowrap;  
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+#file-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    border-width: 1px 0;
+    border-color: #ddd;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding-right: 40px;
+}
+#file-table td a {
+    text-decoration: none;
+    color: inherit;
+    display: inline-block;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+#file-table td button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+#file-table td button:hover {
+    background-color: rgba(169, 169, 169, 0.3);
+}
+
+table a {
+    color: inherit;
+    text-decoration: none;
+}
+
+table a:visited {
+    color: inherit;
+}
+
+table button {
+    background-color: transparent;
+    padding: 0.5rem;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+table button img {
+    width: 20px;
+    height: 20px;
+}
+
+table button:hover {
+    background-color: rgba(169, 169, 169, 0.3);
+}
+
+/* Кнопки */
+button {
+    border-radius: 5px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: color 0.3s, background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* Пагинация */
+#file-pagination, #ranking-pagination {
+    text-align: center;
+}
+
+#file-pagination button, #ranking-pagination button {
+    padding: 0.5rem 1rem;
+    margin: 0 0.25rem; 
+    background: #007bff;
+}
+
+#file-pagination button:hover, #ranking-pagination button:hover {
+    background-color: #0056b3;
+}
+
+#file-select, #ranking-select {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+#file-items-per-page, #ranking-items-per-page {
+    padding: 5px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+/* Стили для вкладок */
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    background-color: #007bff;
+    padding: 10px 20px;
+}
+
+.tab-button.active, .tab-button:hover {
+    background-color: #0056b3;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Стили формы добавления */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.file-input-group, .image-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+input[type="text"], input[type="number"], input[type="file"] {
+    width: calc(100% - 24px);
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+    border-color: #0056b3;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+button[type="submit"] {
+    width: 150px; 
+    align-self: flex-start;
+    margin: 10px auto;
+    display: block;
+    font-size: 18px;
+    padding: 0.5rem 1rem;
+    background-color: #231175;
+}
+
+button[type="submit"]:hover {
+    background-color: #5a9bd4;
+}
