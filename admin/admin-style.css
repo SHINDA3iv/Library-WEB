@@ -61,11 +61,16 @@ p {
 }
 
 /* Стили для навигации */
+.site-nav {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 .site-nav a {
     color: white;
     text-decoration: none;
     transition: color 0.3s, background-color 0.3s;
-    margin-left: 20px;
     padding: 5px 10px;
     border-radius: 5px;
 }
@@ -383,15 +388,22 @@ button[type="submit"]:hover {
 }
 
 /* Авторизация */
+.warning-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height:80vh;
+    text-align: center;
+}
+
 .warning {
     color: red;
-    text-align: center;
     margin-bottom: 20px;
+    font-size: 20px;
 }
 
 .auth-button {
-    display: block;
-    margin: 20px auto;
     background-color: #0056b3;
     color: white;
     padding: 10px 20px;
@@ -399,20 +411,29 @@ button[type="submit"]:hover {
     border-radius: 5px;
     cursor: pointer;
     text-align: center;
+    font-size: 16px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.auth-button:hover {
+    background-color: #004494;
 }
 
 /* Стиль для блока авторизации */
 .auth-buttons {
     display: flex;
     gap: 20px;
-    justify-content: center; /* Центрирование */
-    align-items: center;     /* Выравнивание по вертикали */
+    justify-content: center;
+    align-items: center;
 }
 
 #user-name {
+    max-width: 500px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     padding: 8px 16px;
-    background-color: transparent; /* Без фона */
-    color: black; /* Цвет текста, можно настроить */
+    color: white;
     font-size: 16px;
     text-align: center;
 }

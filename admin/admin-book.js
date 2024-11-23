@@ -1,38 +1,43 @@
-const params = new URLSearchParams(window.location.search);
-const filePath = params.get('file');
+import { domContentLoaded, consoleError } from './admin-modules.js';
+
 let currentPageIndex = 0;
 
-// Загружаем информацию о книге
-fetch(`/admin/book/${filePath}?admin=${true}`)
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('book-title').textContent = data.title;
-        document.getElementById('book-author').textContent = data.author_name;
-        document.getElementById('book-genre').textContent = data.genre_name;
-        document.getElementById('book-publisher').textContent = data.publisher_name;
-        document.getElementById('book-year').textContent = data.publication_year;
-        document.getElementById('book-uploaded-by').textContent = data.uploaded_by || "Неизвестно";
-        document.getElementById('book-file-path').textContent = data.file_path;
-        document.getElementById('book-cover').src = `/uploads/${data.image_path}`;
+// Загрузка деталей книг
+function loadBookDetails() {
+    const params = new URLSearchParams(window.location.search);
+    const filePath = params.get('file');
 
-        const fileExtension = data.file_path.split('.').pop().toLowerCase();
+    fetch(`/admin/book/${filePath}?admin=${true}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('book-title').textContent = data.title;
+            document.getElementById('book-author').textContent = data.author_name;
+            document.getElementById('book-genre').textContent = data.genre_name;
+            document.getElementById('book-publisher').textContent = data.publisher_name;
+            document.getElementById('book-year').textContent = data.publication_year;
+            document.getElementById('book-uploaded-by').textContent = data.uploaded_by || "Неизвестно";
+            document.getElementById('book-file-path').textContent = data.file_path;
+            document.getElementById('book-cover').src = `/uploads/${data.image_path}`;
 
-        if (fileExtension === 'txt') {
-            fetch(`/uploads/${data.file_path}`)
-                .then(response => response.text())
-                .then(content => {
-                    displayTextContent(content);
-                })
-                .catch(error => {
-                    console.error('Ошибка при загрузке содержимого книги:', error);
-                });
-        } else if (fileExtension === 'pdf') {
-            loadPdfContent(`/uploads/${data.file_path}`);
-        }
-    })
-    .catch(error => {
-        console.error('Ошибка при загрузке информации о книге:', error);
-    });
+            const fileExtension = data.file_path.split('.').pop().toLowerCase();
+
+            if (fileExtension === 'txt') {
+                fetch(`/uploads/${data.file_path}`)
+                    .then(response => response.text())
+                    .then(content => {
+                        displayTextContent(content);
+                    })
+                    .catch(error => {
+                        consoleError('Ошибка при загрузке содержимого книги: ' + error);
+                    });
+            } else if (fileExtension === 'pdf') {
+                loadPdfContent(`/uploads/${data.file_path}`);
+            }
+        })
+        .catch(error => {
+            consoleError('Ошибка при загрузке информации о книге: ' + error);
+        });
+}
 
 function displayTextContent(content) {
     const pages = splitTextIntoPages(content, 4000);
@@ -47,18 +52,6 @@ function displayTextContent(content) {
     });
 
     showPage(currentPageIndex);
-}
-
-function showPage(pageIndex) {
-    if (pageIndex < 0 || pageIndex >= pages.length) return;
-
-    const pageDivs = contentContainer.querySelectorAll('.page');
-    pageDivs.forEach((pageDiv, index) => {
-        pageDiv.style.display = (index === pageIndex) ? 'block' : 'none';
-    });
-    currentPageIndex = pageIndex;
-
-    updatePageNumber(currentPageIndex, pages.length);
 }
 
 function updatePageNumber(currentPageIndex, totalPages) {
@@ -148,7 +141,9 @@ function loadPdfContent(pdfUrl) {
                     }
                 });
             })
-            .catch(error => console.error('Ошибка при загрузке PDF:', error));
+            .catch(error => consoleError('Ошибка при загрузке PDF: ' + error));
     };
     document.body.appendChild(script);
 }
+
+domContentLoaded(document, loadBookDetails());

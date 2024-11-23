@@ -51,11 +51,17 @@ p {
 
 .site-header h1 {
     margin: 0;
-    font-size: 24px;
+    font-size: 26px;
+}
+
+/* Стили для навигации */
+.site-nav {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .site-nav a, .main-nav ul li a {
-    margin-left: 20px;
     text-decoration: none;
     color: black;
     transition: color 0.3s, background-color 0.3s;
@@ -352,14 +358,17 @@ button:active {
 .auth-buttons {
     display: flex;
     gap: 20px;
-    justify-content: center; /* Центрирование */
-    align-items: center;     /* Выравнивание по вертикали */
+    justify-content: center;
+    align-items: center;
 }
 
 #user-name {
+    max-width: 500px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     padding: 8px 16px;
-    background-color: transparent; /* Без фона */
-    color: black; /* Цвет текста, можно настроить */
+    color: black;
     font-size: 16px;
     text-align: center;
 }

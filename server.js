@@ -11,6 +11,9 @@ require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const fs = require('fs');
+const path = require('path');
+
 const SECRET_KEY = process.env.SECRET_KEY || 'your_secret_key';
 
 // Настройка подключения к базе данных
@@ -84,6 +87,86 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 
+const logAction = (userId, action) => {
+    const authToken = localStorage.getItem('authToken');
+    let userId = userId;
+
+    if (authToken) {
+        try {
+            const decoded = jwt.verify(authToken, SECRET_KEY);
+            userId = decoded.userId || null;
+        } catch (err) {
+            console.error('Ошибка проверки токена:', err.message);
+        }
+    }
+
+    const logEntry = {
+        userId,
+        action,
+        timestamp: new Date().toISOString()
+    };
+
+    const logFilePath = path.join(__dirname, 'logs', 'user-actions.json');
+    if (!fs.existsSync(path.dirname(logFilePath))) {
+        fs.mkdirSync(path.dirname(logFilePath), { recursive: true });
+    }
+
+    fs.readFile('logs.json', 'utf8', (err, data) => {
+        let logs = [];
+        if (!err && data) {
+            logs = JSON.parse(data);
+        }
+        logs.push(logEntry);
+
+        fs.readFile(logFilePath, 'utf8', (err, data) => {
+            let logs = [];
+            if (!err && data) {
+                logs = JSON.parse(data);
+            }
+
+            logs.push(logEntry);
+
+            fs.writeFile(logFilePath, JSON.stringify(logs, null, 2), (writeErr) => {
+                if (writeErr) {
+                    console.error('Ошибка записи в лог файл:', writeErr);
+                }
+            });
+        });
+    });
+};
+
+app.get('/admin/logs', async (req, res) => {
+    const logFilePath = path.join(__dirname, 'logs', 'user-actions.json');
+    
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10; 
+
+    fs.readFile(logFilePath, 'utf8', (err, data) => {
+        if (err) {
+            return res.status(500).json({ error: 'Ошибка при получении логов' });
+        }
+
+        let logs = [];
+        if (data) {
+            logs = JSON.parse(data);
+        }
+
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+
+        const paginatedLogs = logs.slice(startIndex, endIndex);
+
+        const totalPages = Math.ceil(logs.length / limit);
+
+        res.json({
+            page,
+            totalPages,
+            totalLogs: logs.length,
+            logs: paginatedLogs,
+        });
+    });
+});
+
 // Пагинация и фильтрация файлов
 app.get('/books', async (req, res) => {
     const { page = 1, limit = 5, title = '', author = '', theme = '', year = '' } = req.query;
@@ -153,6 +236,7 @@ app.get('/book/:id', async (req, res) => {
             return res.status(404).json({ error: 'Книга не найдена' });
         }
 
+        logAction(null, `Получена информация о книге: ID ${bookId}`);
         res.json(result[0]);
     } catch (error) {
         handleError(res, error, 'Ошибка при получении книги');
@@ -187,6 +271,7 @@ app.get('/download/:filename', async (req, res) => {
                 `, [filename]);
             }
 
+            logAction(null, `Скачан файл: ${filename}`);
             res.download(filePath, err => {
                 if (err) {
                     return res.status(500).json({ error: 'Ошибка при скачивании файла' });
@@ -231,6 +316,7 @@ app.post('/upload', upload.fields([{ name: 'book_file' }, { name: 'image_file' }
         const result = await queryDatabase(insertBookQuery, values);
         const bookId = result[0].book_id;
 
+        logAction(uploaded_by, `Загружен файл книги: ${bookFile.filename}, ID книги: ${bookId}`);
         res.status(201).json({ message: 'Файл загружен успешно', book_id: bookId });
     } catch (error) {
         handleError(res, error, 'Ошибка при загрузке файла');
@@ -371,7 +457,6 @@ app.get('/admin/downloads', async (req, res) => {
     }
 });
 
-
 // Маршрут для регистрации
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
@@ -390,6 +475,8 @@ app.post('/register', async (req, res) => {
         const insertUserQuery = 'INSERT INTO users (username, password_hash, role, created_at) VALUES ($1, $2, $3, NOW()) RETURNING user_id';
         
         const result = await queryDatabase(insertUserQuery, [username, hashedPassword, 'user']);
+
+        logAction(result[0].user_id, 'Регистрация нового пользователя');
 
         res.status(201).json({ message: 'Пользователь зарегистрирован', user_id: result[0].user_id });
     } catch (error) {
@@ -454,6 +541,7 @@ const requireAdmin = (req, res, next) => {
 // Пример защищенного маршрута
 app.get('/protected', authenticateToken, (req, res) => {
     res.json({ message: 'Это защищенный маршрут', user: req.user });
+    
 });
 
 // Пример маршрута для админа

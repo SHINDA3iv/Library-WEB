@@ -3,6 +3,7 @@ document.getElementById('register-form').addEventListener('submit', async (event
 
     const username = document.getElementById('register-username').value;
     const password = document.getElementById('register-password').value;
+    const errorDiv = document.getElementById('register-error');
 
     try {
         const response = await fetch('/register', {
@@ -15,8 +16,12 @@ document.getElementById('register-form').addEventListener('submit', async (event
         if (response.ok) {
             window.location.href = '../auth/login.html';
         } else {
+            errorDiv.textContent = data.error || 'Ошибка регистрации. Попробуйте снова.';
+            errorDiv.style.display = 'block';
         }
     } catch (error) {
+        errorDiv.textContent = 'Ошибка соединения с сервером.';
+        errorDiv.style.display = 'block';
         console.error('Ошибка при регистрации:', error);
     }
 });
