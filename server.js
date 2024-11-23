@@ -11,9 +11,6 @@ require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const fs = require('fs');
-const path = require('path');
-
 const SECRET_KEY = process.env.SECRET_KEY || 'your_secret_key';
 
 // Настройка подключения к базе данных
@@ -88,18 +85,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 
 const logAction = (userId, action) => {
-    const authToken = localStorage.getItem('authToken');
-    let userId = userId;
-
-    if (authToken) {
-        try {
-            const decoded = jwt.verify(authToken, SECRET_KEY);
-            userId = decoded.userId || null;
-        } catch (err) {
-            console.error('Ошибка проверки токена:', err.message);
-        }
-    }
-
     const logEntry = {
         userId,
         action,
@@ -218,6 +203,7 @@ app.get('/books', async (req, res) => {
 // Маршрут для получения информации о книге по ID
 app.get('/book/:id', async (req, res) => {
     const bookId = req.params.id;
+    const userId = req.get('User-Id'); 
 
     const query = `
         SELECT b.*, a.name AS author_name, g.genre_name, p.publisher_name
@@ -235,8 +221,7 @@ app.get('/book/:id', async (req, res) => {
         if (result.length === 0) {
             return res.status(404).json({ error: 'Книга не найдена' });
         }
-
-        logAction(null, `Получена информация о книге: ID ${bookId}`);
+        logAction(userId, `Получена информация о книге: ID ${bookId}`);
         res.json(result[0]);
     } catch (error) {
         handleError(res, error, 'Ошибка при получении книги');
@@ -247,6 +232,7 @@ app.get('/book/:id', async (req, res) => {
 app.get('/download/:filename', async (req, res) => {
     const { filename } = req.params;
     const filePath = path.join(__dirname, 'uploads', filename);
+    const userId = req.get('User-Id'); 
 
     try {
         fs.access(filePath, fs.constants.F_OK, async (err) => {
@@ -271,7 +257,7 @@ app.get('/download/:filename', async (req, res) => {
                 `, [filename]);
             }
 
-            logAction(null, `Скачан файл: ${filename}`);
+            logAction(userId, `Скачан файл: ${filename}`);
             res.download(filePath, err => {
                 if (err) {
                     return res.status(500).json({ error: 'Ошибка при скачивании файла' });
@@ -329,7 +315,7 @@ app.delete('/admin/files/:filename', async (req, res) => {
 
     try {
         const queryGetBookInfo = {
-            text: 'SELECT book_id, image_path FROM books WHERE file_path = $1',
+            text: 'SELECT book_id, image_path, title FROM books WHERE file_path = $1',
             values: [filename],
         };
 
@@ -341,6 +327,7 @@ app.delete('/admin/files/:filename', async (req, res) => {
 
         const bookId = result.rows[0].book_id;
         const imagePath = result.rows[0].image_path;
+        const title = result.rows[0].title;
 
         await queryDatabase('DELETE FROM file_ratings WHERE book_id = $1', [bookId]);
         await queryDatabase('DELETE FROM books WHERE file_path = $1', [filename]);
@@ -357,6 +344,7 @@ app.delete('/admin/files/:filename', async (req, res) => {
             }
         }
 
+        logAction(null, `Удалена книга: ${title}, ID книги: ${bookId}`);
         res.status(204).send();
     } catch (error) {
         handleError(res, error, 'Ошибка при удалении файла');
@@ -386,6 +374,7 @@ app.get('/admin/book/:filename', async (req, res) => {
             return res.status(404).json({ error: 'Книга не найдена' });
         }
 
+        logAction(null, `Получена информация о книге: ID ${result.rows[0].book_Id}`);
         res.json(result.rows[0]);
     } catch (error) {
         handleError(res, error, 'Ошибка при получении информации о книге');
@@ -508,6 +497,9 @@ app.post('/login', async (req, res) => {
             SECRET_KEY,
             { expiresIn: '1h' }
         );        
+        
+        logAction(user[0].user_id, 'Авторизация пользователя');
+
         res.json({ token });
     } catch (error) {
         handleError(res, error, 'Ошибка при входе');

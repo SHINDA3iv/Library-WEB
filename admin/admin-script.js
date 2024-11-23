@@ -168,7 +168,7 @@ document.getElementById('log-items-per-page').addEventListener('change', () => {
 });
 
 // Функция для открытия вкладок
-function openTab(tabName) {
+export function openTab(tabName) {
     const tabContents = document.querySelectorAll('.tab-content');
     const tabButtons = document.querySelectorAll('.tab-button');
 
@@ -184,3 +184,5 @@ domContentLoaded(document, () => {
     loadDownloadRanking(rankingCurrentPage);
     loadLogs(logCurrentPage);
 });
+
+window.openTab = openTab;

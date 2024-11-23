@@ -293,27 +293,27 @@ button:active {
 }
 
 /* Пагинация */
-#file-pagination, #ranking-pagination {
+#file-pagination, #ranking-pagination, #log-pagination {
     text-align: center;
 }
 
-#file-pagination button, #ranking-pagination button {
+#file-pagination button, #ranking-pagination button, #log-pagination button {
     padding: 0.5rem 1rem;
     margin: 0 0.25rem; 
     background: #007bff;
 }
 
-#file-pagination button:hover, #ranking-pagination button:hover {
+#file-pagination button:hover, #ranking-pagination button:hover, #log-pagination button:hover {
     background-color: #0056b3;
 }
 
-#file-select, #ranking-select {
+#file-select, #ranking-select, #log-select {
     display: flex;
     justify-content: center;
     margin-top: 10px;
 }
 
-#file-items-per-page, #ranking-items-per-page {
+#file-items-per-page, #ranking-items-per-page, #log-items-per-page {
     padding: 5px;
     font-size: 16px;
     border-radius: 4px;
