@@ -381,3 +381,50 @@ button[type="submit"] {
 button[type="submit"]:hover {
     background-color: #5a9bd4;
 }
+
+/* Авторизация */
+.warning {
+    color: red;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.auth-button {
+    display: block;
+    margin: 20px auto;
+    background-color: #0056b3;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+/* Стиль для блока авторизации */
+.auth-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center; /* Центрирование */
+    align-items: center;     /* Выравнивание по вертикали */
+}
+
+#user-name {
+    padding: 8px 16px;
+    background-color: transparent; /* Без фона */
+    color: black; /* Цвет текста, можно настроить */
+    font-size: 16px;
+    text-align: center;
+}
+
+.auth-button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0px;
+}

@@ -111,5 +111,47 @@ filterForm.addEventListener('submit', (event) => {
     loadFiles(currentPage, title, author, theme, year);
 });
 
-// Начальная загрузка файлов
+document.addEventListener('DOMContentLoaded', () => {
+    const redirectURL = window.location.href;
+    sessionStorage.setItem('redirectURL', redirectURL);
+    
+    const loginBtn = document.getElementById('login-btn');
+    const registerBtn = document.getElementById('register-btn');
+    const userNameSpan = document.getElementById('user-name');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    const authToken = localStorage.getItem('authToken');
+    if (authToken) {
+        try {
+            const payload = JSON.parse(atob(authToken.split('.')[1])); 
+            const currentTime = Math.floor(Date.now() / 1000);
+
+            if (payload.exp < currentTime) {
+                handleLogout();
+            } else {
+                userNameSpan.textContent = `Пользователь: ${payload.username}`; 
+                loginBtn.style.display = 'none';
+                registerBtn.style.display = 'none';
+                userNameSpan.style.display = 'inline';
+                logoutBtn.style.display = 'inline';
+            }
+        } catch (error) {
+            console.error('Ошибка при расшифровке токена:', error);
+            handleLogout();
+        }
+    } else {
+        loginBtn.style.display = 'inline';
+        registerBtn.style.display = 'inline';
+        userNameSpan.style.display = 'none';
+        logoutBtn.style.display = 'none';
+    }
+
+    logoutBtn.addEventListener('click', handleLogout);
+
+    function handleLogout() {
+        localStorage.removeItem('authToken');
+        window.location.reload();
+    }
+});
+
 loadFiles(currentPage);

@@ -347,3 +347,31 @@ button:active {
 .toggle-filter-btn:hover {
     background-color: #0056b3;
 }
+
+/* Стиль для блока авторизации */
+.auth-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center; /* Центрирование */
+    align-items: center;     /* Выравнивание по вертикали */
+}
+
+#user-name {
+    padding: 8px 16px;
+    background-color: transparent; /* Без фона */
+    color: black; /* Цвет текста, можно настроить */
+    font-size: 16px;
+    text-align: center;
+}
+
+.auth-button {
+    padding: 8px 16px;
+    background-color: #0056b3;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0px;
+}

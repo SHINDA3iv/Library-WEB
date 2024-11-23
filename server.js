@@ -74,10 +74,15 @@ const upload = multer({
 
 // Публичные файлы
 app.use(express.static('public'));
-
 // Административные файлы
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
+//Аутентификация
+app.use('/auth', express.static(path.join(__dirname, 'auth')));
+//Файлы
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); 
 
 // Пагинация и фильтрация файлов
 app.get('/books', async (req, res) => {
@@ -165,23 +170,21 @@ app.get('/download/:filename', async (req, res) => {
                 return res.status(404).json({ error: 'Файл не найден' });
             }
             
-            if (admin !== 'true') {
-                const result = await queryDatabase(`
-                    SELECT * FROM file_ratings WHERE book_id = (SELECT book_id FROM books WHERE file_path = $1)
+            const result = await queryDatabase(`
+                SELECT * FROM file_ratings WHERE book_id = (SELECT book_id FROM books WHERE file_path = $1)
+            `, [filename]);
+            
+            if (result.length === 0) {
+                await queryDatabase(`
+                    INSERT INTO file_ratings (book_id, download_count)
+                    VALUES ((SELECT book_id FROM books WHERE file_path = $1), 1)
                 `, [filename]);
-                
-                if (result.length === 0) {
-                    await queryDatabase(`
-                        INSERT INTO file_ratings (book_id, download_count)
-                        VALUES ((SELECT book_id FROM books WHERE file_path = $1), 1)
-                    `, [filename]);
-                } else {
-                    await queryDatabase(`
-                        UPDATE file_ratings
-                        SET download_count = download_count + 1
-                        WHERE book_id = (SELECT book_id FROM books WHERE file_path = $1)
-                    `, [filename]);
-                }
+            } else {
+                await queryDatabase(`
+                    UPDATE file_ratings
+                    SET download_count = download_count + 1
+                    WHERE book_id = (SELECT book_id FROM books WHERE file_path = $1)
+                `, [filename]);
             }
 
             res.download(filePath, err => {
@@ -371,14 +374,10 @@ app.get('/admin/downloads', async (req, res) => {
 
 // Маршрут для регистрации
 app.post('/register', async (req, res) => {
-    const { username, password, role } = req.body;
+    const { username, password } = req.body;
 
-    if (!username || !password || !role) {
-        return res.status(400).json({ error: 'Имя пользователя, пароль и роль обязательны' });
-    }
-
-    if (role !== 'user' && role !== 'admin') {
-        return res.status(400).json({ error: 'Некорректная роль' });
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Имя пользователя и пароль обязательны' });
     }
 
     try {
@@ -389,7 +388,8 @@ app.post('/register', async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const insertUserQuery = 'INSERT INTO users (username, password_hash, role, created_at) VALUES ($1, $2, $3, NOW()) RETURNING user_id';
-        const result = await queryDatabase(insertUserQuery, [username, hashedPassword, role]);
+        
+        const result = await queryDatabase(insertUserQuery, [username, hashedPassword, 'user']);
 
         res.status(201).json({ message: 'Пользователь зарегистрирован', user_id: result[0].user_id });
     } catch (error) {
@@ -415,8 +415,12 @@ app.post('/login', async (req, res) => {
         if (!validPassword) {
             return res.status(401).json({ error: 'Неправильное имя пользователя или пароль' });
         }
-
-        const token = jwt.sign({ userId: user[0].user_id, role: user[0].role }, SECRET_KEY, { expiresIn: '1h' });
+        
+        const token = jwt.sign(
+            { userId: user[0].user_id, role: user[0].role, username: user[0].username },
+            SECRET_KEY,
+            { expiresIn: '1h' }
+        );        
         res.json({ token });
     } catch (error) {
         handleError(res, error, 'Ошибка при входе');

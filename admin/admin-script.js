@@ -160,7 +160,6 @@ function displayRankingPagination(currentPage, totalPages) {
     }
 }
 
-
 function openTab(tabName) {
     const tabContents = document.querySelectorAll('.tab-content');
     const tabButtons = document.querySelectorAll('.tab-button');
@@ -177,8 +176,57 @@ function openTab(tabName) {
     document.querySelector(`.tab-button[onclick="openTab('${tabName}')"]`).classList.add('active');
 }
 
-// Загрузка файлов при загрузке страницы
-loadFiles(currentPage);
+document.addEventListener('DOMContentLoaded', () => {
+    const redirectURL = window.location.href;
+    sessionStorage.setItem('redirectURL', redirectURL);
+    
+    const authToken = localStorage.getItem('authToken');
+    const userNameSpan = document.getElementById('user-name');
+    const logoutBtn = document.getElementById('logout-btn');
 
-// Загрузка рейтинга при загрузке страницы
-loadDownloadRanking(rankingCurrentPage);
+    if (authToken) {
+        try {
+            const payload = JSON.parse(atob(authToken.split('.')[1]));
+            const currentTime = Math.floor(Date.now() / 1000);
+            
+            if (payload.exp < currentTime) {
+                handleLogout();
+            } else if (payload.role === 'admin') {
+                userNameSpan.textContent = `Администратор: ${payload.username}`;
+
+                loadFiles(currentPage);
+                loadDownloadRanking(rankingCurrentPage);
+            } else {
+                showAccessDeniedMessage();
+            }
+        } catch (error) {
+            console.error('Ошибка при проверке токена:', error);
+            handleLogout();
+        }
+    } else {
+        showAccessDeniedMessage();
+    }
+
+    logoutBtn.addEventListener('click', handleLogout);
+
+    function handleLogout() {
+        localStorage.removeItem('authToken');
+        window.location.reload();
+    }
+
+    function showAccessDeniedMessage() {
+        const authWarning = document.createElement('div');
+        authWarning.textContent = 'Доступ запрещен. Пожалуйста, войдите с учетной записью администратора.';
+        authWarning.className = 'warning';
+        document.body.innerHTML = '';
+        document.body.appendChild(authWarning);
+
+        const loginButton = document.createElement('button');
+        loginButton.textContent = 'Перейти к авторизации';
+        loginButton.className = 'auth-button';
+        loginButton.addEventListener('click', () => {
+            window.location.href = '../auth/login.html';
+        });
+        document.body.appendChild(loginButton);
+    }
+});
