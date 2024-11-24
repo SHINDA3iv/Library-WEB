@@ -1,4 +1,4 @@
-import { domContentLoaded, consoleError } from './modules.js';
+import { verifyTokenAccess, domContentLoaded, consoleError } from './modules.js';
 
 const bookGrid = document.getElementById('book-grid');
 const pagination = document.getElementById('pagination');
@@ -44,12 +44,20 @@ itemsPerPageSelect.addEventListener('change', () => {
 });
 
 // Отображение файлов на странице
-function displayFiles(files) {
+async function displayFiles(files) {
     bookGrid.innerHTML = '';
     if (files.length === 0) {
         bookGrid.innerHTML = '<p>Нет доступных файлов.</p>';
         return;
     }
+    
+    let userId = null; 
+    const authToken = localStorage.getItem('authToken');
+    if (authToken) {
+        const user = await verifyTokenAccess(authToken);
+        userId = user.userId;
+    }
+
     files.forEach(file => {
         const bookCard = document.createElement('div');
         bookCard.classList.add('book-card');
@@ -63,7 +71,7 @@ function displayFiles(files) {
             <img src="/uploads/${file.image_path}" alt="${file.title}">
             <h3>${file.title}</h3>
             <p>${file.author_name}</p>
-            <a href="/download/${file.file_path}" class="download-link">Скачать</a>
+            <a id="book-download" href="/download/${file.file_path}?userId=${userId}" class="download-link">Скачать</a>
         `;
         
         bookCard.appendChild(bookLink);
@@ -113,4 +121,4 @@ filterForm.addEventListener('submit', (event) => {
     loadFiles(currentPage, title, author, theme, year);
 });
 
-domContentLoaded(document, loadFiles(currentPage));
+domContentLoaded(document, () => { loadFiles(currentPage); });

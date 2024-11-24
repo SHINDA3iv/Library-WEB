@@ -84,9 +84,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 
-const logAction = (userId, action) => {
+const logAction = (user_id, action) => {
     const logEntry = {
-        userId,
+        userId: (user_id == "null" || user_id == null || user_id == undefined) ? "Гость" : user_id,
         action,
         timestamp: new Date().toISOString()
     };
@@ -229,10 +229,10 @@ app.get('/book/:id', async (req, res) => {
 });
 
 // Маршрут для скачивания файла
-app.get('/download/:filename', async (req, res) => {
+app.get('/download/:filename', (req, res) => {
     const { filename } = req.params;
     const filePath = path.join(__dirname, 'uploads', filename);
-    const userId = req.get('User-Id'); 
+    const userId = req.query.userId;
 
     try {
         fs.access(filePath, fs.constants.F_OK, async (err) => {
@@ -270,7 +270,7 @@ app.get('/download/:filename', async (req, res) => {
 });
 
 // Маршрут для загрузки файлов
-app.post('/upload', upload.fields([{ name: 'book_file' }, { name: 'image_file' }]), async (req, res) => {
+app.post('/admin/upload', upload.fields([{ name: 'book_file' }, { name: 'image_file' }]), async (req, res) => {
     try {
         if (!req.files || !req.files['book_file']) {
             return res.status(400).json({ error: 'Файл книги обязателен для загрузки' });
@@ -312,6 +312,7 @@ app.post('/upload', upload.fields([{ name: 'book_file' }, { name: 'image_file' }
 // Административный маршрут для удаления файла и записей скачиваний
 app.delete('/admin/files/:filename', async (req, res) => {
     const filename = req.params.filename;
+    const userId = req.body.userId;
 
     try {
         const queryGetBookInfo = {
@@ -344,7 +345,7 @@ app.delete('/admin/files/:filename', async (req, res) => {
             }
         }
 
-        logAction(null, `Удалена книга: ${title}, ID книги: ${bookId}`);
+        logAction(userId, `Удалена книга: ${title}, ID книги: ${bookId}`);
         res.status(204).send();
     } catch (error) {
         handleError(res, error, 'Ошибка при удалении файла');
@@ -354,6 +355,7 @@ app.delete('/admin/files/:filename', async (req, res) => {
 // Маршрут для получения информации о книге по ID
 app.get('/admin/book/:filename', async (req, res) => {
     const filePath = req.params.filename;
+    const userId = req.query.userId;
 
     try {
         const query = {
@@ -373,8 +375,7 @@ app.get('/admin/book/:filename', async (req, res) => {
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Книга не найдена' });
         }
-
-        logAction(null, `Получена информация о книге: ID ${result.rows[0].book_Id}`);
+        logAction(userId, `Получена информация о книге: ID ${result.rows[0].book_id}`);
         res.json(result.rows[0]);
     } catch (error) {
         handleError(res, error, 'Ошибка при получении информации о книге');

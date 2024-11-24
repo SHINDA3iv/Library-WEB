@@ -1,13 +1,20 @@
-import { domContentLoaded, consoleError } from './admin-modules.js';
+import { verifyAdminAccess, domContentLoaded, consoleError } from './admin-modules.js';
 
 let currentPageIndex = 0;
 
 // Загрузка деталей книг
-function loadBookDetails() {
+async function loadBookDetails() {
     const params = new URLSearchParams(window.location.search);
     const filePath = params.get('file');
 
-    fetch(`/admin/book/${filePath}?admin=${true}`)
+    let userId = null; 
+    const authToken = localStorage.getItem('authToken');
+    if (authToken) {
+        const user = await verifyAdminAccess(authToken);
+        userId = user.userId;
+    }
+
+    await fetch(`/admin/book/${filePath}?admin=${true}&userId=${userId}`)
         .then(response => response.json())
         .then(data => {
             document.getElementById('book-title').textContent = data.title;
@@ -146,4 +153,4 @@ function loadPdfContent(pdfUrl) {
     document.body.appendChild(script);
 }
 
-domContentLoaded(document, loadBookDetails());
+domContentLoaded(document, () => { loadBookDetails(); });

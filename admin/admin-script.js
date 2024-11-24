@@ -1,4 +1,4 @@
-import { domContentLoaded, consoleError } from './admin-modules.js';
+import { verifyAdminAccess, domContentLoaded, consoleError } from './admin-modules.js';
 
 const fileTable = document.getElementById('file-table').getElementsByTagName('tbody')[0];
 const uploadForm = document.getElementById('upload-form');
@@ -13,7 +13,7 @@ let rankingLimit = parseInt(document.getElementById('ranking-items-per-page').va
 
 const logPagination = document.getElementById('log-pagination');
 let logCurrentPage = 1;
-let logLimit = 10;
+let logLimit = 20;
 
 // Общая функция для создания пагинации
 function createPagination(paginationElement, currentPage, totalPages, onPageClick) {
@@ -64,7 +64,10 @@ function loadFiles(page) {
             icon.src = '/admin/trash.png'; 
             icon.alt = 'Удалить';
             deleteButton.appendChild(icon);
-            deleteButton.addEventListener('click', () => deleteFile(file.file_path));
+            deleteButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                deleteFile(file.file_path);
+            });
 
             titleCell.appendChild(deleteButton);
         });
@@ -75,29 +78,58 @@ function loadFiles(page) {
 }
 
 // Функция для удаления файла
-function deleteFile(filename) {
-    fetch(`/admin/files/${filename}`, { method: 'DELETE' })
-        .then(response => {
-            if (response.ok) {
-                loadFiles(currentPage);
-            } else {
-                return response.json().then(data => { throw new Error(data.error); });
-            }
-        })
-        .catch(error => {
-            consoleError('Ошибка при удалении файла: ' + error);
-        });
+async function deleteFile(filename) {
+    let userId = null; 
+    const authToken = localStorage.getItem('authToken');
+    if (authToken) {
+        const user = await verifyAdminAccess(authToken);
+        userId = user.userId;
+    }
+
+    await fetch(`/admin/files/${filename}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+    })
+    .then(response => {
+        if (response.ok) {
+            loadFiles(currentPage);
+            loadDownloadRanking(rankingCurrentPage);
+            loadLogs(logCurrentPage);
+        } else {
+            return response.json().then(data => { throw new Error(data.error); });
+        }
+    })
+    .catch(error => {
+        consoleError('Ошибка при удалении файла: ' + error);
+    });
 }
 
 // Функция для добавления файла
-uploadForm.addEventListener('submit', event => {
+uploadForm.addEventListener('submit', async event => {
     event.preventDefault();
-    const formData = new FormData(uploadForm);
 
-    fetch('/upload', { method: 'POST', body: formData })
+    let userId = null;
+    const authToken = localStorage.getItem('authToken');
+    if (authToken) {
+        try {
+            const user = await verifyAdminAccess(authToken);
+            userId = user.userId;
+        } catch (error) {
+            consoleError('Ошибка проверки токена: ' + error);
+            return;
+        }
+    }
+
+    const formData = new FormData(uploadForm);
+    formData.append('uploaded_by', userId);
+
+    fetch('/admin/upload', { method: 'POST', body: formData })
         .then(response => {
             if (response.ok) {
                 loadFiles(currentPage);
+                loadDownloadRanking(rankingCurrentPage);
+                loadLogs(logCurrentPage);
                 uploadForm.reset();
             } else {
                 return response.json().then(data => { throw new Error(data.error); });
@@ -144,7 +176,6 @@ async function loadLogs(page) {
         consoleError('Ошибка при загрузке логов: ' + error);
     });
 }
-
 
 // Обработчик изменения количества элементов на странице файлов
 document.getElementById('file-items-per-page').addEventListener('change', () => {
