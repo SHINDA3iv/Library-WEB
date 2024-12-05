@@ -62,6 +62,7 @@ p {
 
 /* Стили для навигации */
 .site-nav {
+    font-size: 18px;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -71,7 +72,7 @@ p {
     color: white;
     text-decoration: none;
     transition: color 0.3s, background-color 0.3s;
-    padding: 5px 10px;
+    padding: 10px 15px;
     border-radius: 5px;
 }
 
@@ -289,7 +290,7 @@ button:hover {
 }
 
 button:active {
-    transform: translateY(0);
+    transform: translateY(1px);
 }
 
 /* Пагинация */
@@ -403,22 +404,6 @@ button[type="submit"]:hover {
     font-size: 20px;
 }
 
-.auth-button {
-    background-color: #0056b3;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-align: center;
-    font-size: 16px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.auth-button:hover {
-    background-color: #004494;
-}
-
 /* Стиль для блока авторизации */
 .auth-buttons {
     display: flex;
@@ -434,7 +419,7 @@ button[type="submit"]:hover {
     text-overflow: ellipsis;
     padding: 8px 16px;
     color: white;
-    font-size: 16px;
+    font-size: 18px;
     text-align: center;
 }
 
@@ -448,4 +433,9 @@ button[type="submit"]:hover {
     cursor: pointer;
     transition: background-color 0.3s;
     margin: 0px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.auth-button:hover {
+    background-color: #0063d4;
 }

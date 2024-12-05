@@ -2,6 +2,8 @@ body {
     font-family: Arial, sans-serif;
     color: #333;
     background-color: #f9f9f9;
+    background: url('background.jpg') no-repeat center center fixed; 
+    background-size: cover;
     margin: 0;
     padding: 0;
     padding-top: 60px;
@@ -11,7 +13,7 @@ body {
     width: 900px;
     margin: 1rem auto;
     background-color: #fff;
-    padding: 30px;
+    padding: 20px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
 }
@@ -20,12 +22,15 @@ h1 {
     text-align: center;
     color: #333;
     margin-bottom: 30px;
+    font-size: 36px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
     margin: 40px 0 20px 0;
     text-align: center;
     color: #333;
+    font-size: 28px;
 }
 
 p {
@@ -47,6 +52,11 @@ p {
     right: 0;
     z-index: 1000;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: color 0.3s ease;
+}
+
+.site-nav a:hover {
+    color: #007BFF;
 }
 
 .site-header h1 {
@@ -56,6 +66,7 @@ p {
 
 /* Стили для навигации */
 .site-nav {
+    font-size: 18px;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -65,13 +76,12 @@ p {
     text-decoration: none;
     color: black;
     transition: color 0.3s, background-color 0.3s;
-    padding: 5px 10px;
+    padding: 10px 15px;
     border-radius: 5px;
 }
 
 .site-nav a:hover, .main-nav ul li a:hover {
     background-color: rgba(233, 233, 233, 0.5); 
-    color: #404040;
 }
 
 .main-nav ul {
@@ -95,7 +105,7 @@ button:hover {
 }
 
 button:active {
-    transform: translateY(0);
+    transform: translateY(1px);
 }
 
 .book-card {
@@ -369,7 +379,7 @@ button:active {
     text-overflow: ellipsis;
     padding: 8px 16px;
     color: black;
-    font-size: 16px;
+    font-size: 18px;
     text-align: center;
 }
 
@@ -381,6 +391,31 @@ button:active {
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
     margin: 0px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.auth-button:hover {
+    transform: translateY(-2px);
+    background-color: #0063d4;
+}
+
+.auth-button:active {
+    transform: translateY(1px);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+h1, h2 {
+    animation: fadeIn 0.6s ease forwards; /* Применяем анимацию к заголовкам */
 }
