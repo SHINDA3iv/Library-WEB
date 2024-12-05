@@ -1,45 +1,146 @@
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: Arial, sans-serif;
+    color: #333;
     background-color: #f9f9f9;
+    background-size: cover;
     margin: 0;
     padding: 0;
-    padding-top: 80px;
+    padding-top: 60px;
+}
+
+.container {
+    width: 900px;
+    margin: 1rem auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 36px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    margin: 40px 0 20px 0;
+    text-align: center;
+    color: #333;
+    font-size: 28px;
+}
+
+p {
+    font-size: 18px;
+    line-height: 1.5;
+    margin: 10px 0;
 }
 
 .site-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #007bff;
-    padding: 15px 30px;
-    color: white;
     position: fixed;
+    background-color: #007bff;
+    color: white;
+    padding: 15px 30px;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: color 0.3s ease;
 }
 
 .site-header h1 {
     margin: 0;
-    font-size: 24px;
+    font-size: 26px;
 }
 
-.container {
-    max-width: 900px;
-    margin: 0 auto;
-    background-color: #fff;
-    padding: 30px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+/* Стили для навигации */
+.site-nav {
+    font-size: 18px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.site-nav a{
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    color: black;
+    transition: color 0.3s, background-color 0.3s;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+.site-nav a:hover{
+    background-color: rgba(233, 233, 233, 0.5); 
+}
+
+.site-nav a::before,
+.site-nav a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background: white;
+    transition: width 0.3s ease;
+}
+
+.site-nav a::before {
+    top: 0;
+    left: 0%;
+}
+
+.site-nav a::after {
+    bottom: 0;
+    right: 0%;
+}
+
+.site-nav a:hover::before {
+    width: 100%;
+    left: 0;
+}
+
+.site-nav a:hover::after {
+    width: 100%;
+    right: 0;
+}
+
+button {
+    border-radius: 5px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: color 0.3s, background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(1px);
 }
 
 .book-details-container {
+    width: 1000px;
     display: flex;
     justify-content: center;
     align-items: flex-start;
     gap: 40px;
+}
+
+.book-cover {
+    width: 200px;
+    height: auto;
+    display: block;
+    margin-bottom: 20px;
 }
 
 .book-cover-wrapper img {
@@ -48,6 +149,7 @@ body {
     object-position: center;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.5s ease;
 }
 
 .book-info {
@@ -70,6 +172,8 @@ body {
 }
 
 .download-link {
+    position: relative; 
+    overflow: hidden;
     display: inline-block;
     padding: 12px 24px;
     background-color: #007bff;
@@ -79,11 +183,34 @@ body {
     margin-top: 20px;
     font-size: 16px;
     font-weight: bold;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.download-link::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.75s ease;
+    z-index: 0;
+}
+
+.download-link:hover::before {
+    transform: translate(-50%, -50%) scale(1);
 }
 
 .download-link:hover {
     background-color: #0056b3;
+    transform: translateY(-3px);
+}
+
+.download-link:active {
+    transform: translateY(1px);
 }
 
 @media (max-width: 768px) {
@@ -96,4 +223,80 @@ body {
         margin-top: 20px;
         width: 100%;
     }
+}
+
+/* Стиль для блока авторизации */
+.auth-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+#user-name {
+    max-width: 500px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 8px 16px;
+    color: black;
+    font-size: 18px;
+    text-align: center;
+}
+
+.auth-button {
+    position: relative;
+    overflow: hidden;
+    padding: 8px 16px;
+    background-color: #0056b3;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    margin: 0px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.auth-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.75s ease;
+    z-index: 0;
+}
+
+.auth-button:hover::before {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.auth-button:hover {
+    transform: translateY(-2px);
+    background-color: #0063d4;
+}
+
+.auth-button:active {
+    transform: translateY(1px);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+h1, h2 {
+    animation: fadeIn 0.6s ease forwards; /* Применяем анимацию к заголовкам */
 }

@@ -69,9 +69,11 @@ async function displayFiles(files) {
         
         bookLink.innerHTML = `
             <img src="/uploads/${file.image_path}" alt="${file.title}">
-            <h3>${file.title}</h3>
-            <p>${file.author_name}</p>
-            <a id="book-download" href="/download/${file.file_path}?userId=${userId}" class="download-link">Скачать</a>
+            <div class="book-info-container">
+                <h3>${file.title}</h3>
+                <p>${file.author_name}</p>
+                <a id="book-download" href="/download/${file.file_path}?userId=${userId}" class="download-link">Скачать</a>
+            </div>
         `;
         
         bookCard.appendChild(bookLink);

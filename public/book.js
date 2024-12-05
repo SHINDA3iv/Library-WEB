@@ -4,6 +4,17 @@ import { verifyTokenAccess, domContentLoaded, consoleError } from './modules.js'
 const params = new URLSearchParams(window.location.search);
 const bookId = params.get('id');
 
+const bookCover = document.getElementById('book-cover');
+let currentRotation = 0;
+
+// Функция для поворота изображения
+function rotateImage() {
+    currentRotation += 360;
+    bookCover.style.transform = `rotate(${currentRotation}deg)`;
+}
+
+bookCover.addEventListener('click', rotateImage);
+
 // Функция для загрузки данных книги
 async function loadBookDetails(id) {
     let userId = null; 
