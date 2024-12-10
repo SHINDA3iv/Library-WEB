@@ -84,11 +84,33 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 
-const logAction = (user_id, action) => {
+const logAction = async (user_id, action) => {
+    let userDisplayName = "Гость"; 
+    
+    if (user_id && user_id !== "null") {
+        const query = 'SELECT username FROM users WHERE user_id = $1';
+        try {
+            const result = await queryDatabase(query, [user_id]);
+            if (result.length > 0) {
+                userDisplayName = `${result[0].username} : ID ${user_id}`;
+            }
+        } catch (error) {
+            console.error('Ошибка при запросе к базе данных для получения username:', error);
+        }
+    }
+
     const logEntry = {
-        userId: (user_id == "null" || user_id == null || user_id == undefined) ? "Гость" : user_id,
+        user: userDisplayName,
         action,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toLocaleString('ru-RU', {
+            timeZone: 'Asia/Tomsk',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        }),
     };
 
     const logFilePath = path.join(__dirname, 'logs', 'user-actions.json');
@@ -96,29 +118,84 @@ const logAction = (user_id, action) => {
         fs.mkdirSync(path.dirname(logFilePath), { recursive: true });
     }
 
-    fs.readFile('logs.json', 'utf8', (err, data) => {
+    fs.readFile(logFilePath, 'utf8', (err, data) => {
         let logs = [];
         if (!err && data) {
             logs = JSON.parse(data);
         }
         logs.push(logEntry);
 
-        fs.readFile(logFilePath, 'utf8', (err, data) => {
-            let logs = [];
-            if (!err && data) {
-                logs = JSON.parse(data);
+        fs.writeFile(logFilePath, JSON.stringify(logs, null, 2), (writeErr) => {
+            if (writeErr) {
+                console.error('Ошибка записи в лог файл:', writeErr);
             }
-
-            logs.push(logEntry);
-
-            fs.writeFile(logFilePath, JSON.stringify(logs, null, 2), (writeErr) => {
-                if (writeErr) {
-                    console.error('Ошибка записи в лог файл:', writeErr);
-                }
-            });
         });
     });
 };
+
+
+app.get('/admin/logs/export', async (req, res) => {
+    const { start, end, format } = req.query;
+
+    if (!start || !end || !format) {
+        return res.status(400).json({ error: 'Укажите начальную и конечную дату, а также формат файла.' });
+    }
+
+    const logFilePath = path.join(__dirname, 'logs', 'user-actions.json');
+
+    fs.readFile(logFilePath, 'utf8', (err, data) => {
+        if (err) {
+            return res.status(500).json({ error: 'Ошибка чтения логов.' });
+        }
+
+        let logs = [];
+        if (data) {
+            logs = JSON.parse(data);
+        }
+
+        const parseDate = (dateString) => {
+            const [date, time] = dateString.split(', ');
+            const [day, month, year] = date.split('.');
+            return new Date(`${year}-${month}-${day}T${time}.000Z`);
+        };
+
+        const filteredLogs = logs.filter(log => {
+            const logDate = parseDate(log.timestamp);
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            return logDate >= startDate && logDate <= endDate;
+        });
+
+        let content;
+        let mimeType;
+
+        switch (format.toLowerCase()) {
+            case 'json':
+                content = JSON.stringify(filteredLogs, null, 2);
+                mimeType = 'application/json';
+                break;
+            case 'xml':
+                content = `<?xml version="1.0" encoding="UTF-8"?>\n<logs>\n` +
+                    filteredLogs.map(log =>
+                        `  <log>\n    <timestamp>${log.timestamp}</timestamp>\n    <action>${log.action}</action>\n    <user>${log.user}</user>\n  </log>` 
+                    ).join('\n') +
+                    `\n</logs>`;
+                mimeType = 'application/xml';
+                break;
+            case 'txt':
+                content = filteredLogs.map(log => `[${log.timestamp}] ${log.action} - User: ${log.user}`).join('\n');
+                mimeType = 'text/plain';
+                break;
+            default:
+                return res.status(400).json({ error: 'Неподдерживаемый формат файла.' });
+        }
+
+        // Отправка файла клиенту
+        res.setHeader('Content-Type', mimeType);
+        res.setHeader('Content-Disposition', `attachment; filename="logs_${start}_${end}.${format}"`);
+        res.send(content);
+    });
+});
 
 app.get('/admin/logs', async (req, res) => {
     const logFilePath = path.join(__dirname, 'logs', 'user-actions.json');
@@ -221,7 +298,10 @@ app.get('/book/:id', async (req, res) => {
         if (result.length === 0) {
             return res.status(404).json({ error: 'Книга не найдена' });
         }
-        logAction(userId, `Получена информация о книге: ID ${bookId}`);
+
+        const bookTitle = result[0].title;
+
+        logAction(userId, `Получена информация о книге ${bookTitle}: ID ${bookId}`);
         res.json(result[0]);
     } catch (error) {
         handleError(res, error, 'Ошибка при получении книги');
@@ -375,7 +455,11 @@ app.get('/admin/book/:filename', async (req, res) => {
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Книга не найдена' });
         }
-        logAction(userId, `Получена информация о книге: ID ${result.rows[0].book_id}`);
+        
+        const bookTitle = result[0].title;
+        const bookId = result[0].book_id;
+
+        logAction(userId, `Получена информация о книге ${bookTitle}: ID ${bookId}`);
         res.json(result.rows[0]);
     } catch (error) {
         handleError(res, error, 'Ошибка при получении информации о книге');
@@ -466,7 +550,7 @@ app.post('/register', async (req, res) => {
         
         const result = await queryDatabase(insertUserQuery, [username, hashedPassword, 'user']);
 
-        logAction(result[0].user_id, 'Регистрация нового пользователя');
+        logAction(result[0].user_id, `Регистрация нового пользователя ${username} : ID ${result[0].user_id}`);
 
         res.status(201).json({ message: 'Пользователь зарегистрирован', user_id: result[0].user_id });
     } catch (error) {
@@ -499,7 +583,7 @@ app.post('/login', async (req, res) => {
             { expiresIn: '1h' }
         );        
         
-        logAction(user[0].user_id, 'Авторизация пользователя');
+        logAction(user[0].user_id, `Авторизация пользователя ${username} : ID ${result[0].user_id}`);
 
         res.json({ token });
     } catch (error) {

@@ -439,3 +439,126 @@ button[type="submit"]:hover {
 .auth-button:hover {
     background-color: #0063d4;
 }
+
+/* Стили для таблицы логов */
+#log-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#log-table th, #log-table td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    font-size: 16px;
+}
+
+#log-table th {
+    background-color: #f9f9f9;
+    font-weight: bold;
+}
+
+#log-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Навигация и выбор логов */
+#log-pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+#log-pagination button {
+    padding: 8px 16px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#log-pagination button:hover {
+    background-color: #0056b3;
+}
+
+#log-pagination button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Выбор количества записей */
+#log-select {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+#log-select select {
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+
+/* Блок экспорта логов */
+#log-export {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f7f7f7;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column; /* Ставим элементы в колонку */
+    gap: 15px; /* Отступ между строками */
+}
+
+/* Заголовок на весь блок */
+#log-export h3 {
+    margin: 0;
+    font-size: 18px;
+    text-align: center;
+}
+
+/* Размещение элементов ввода и кнопки в строку */
+#log-export .form-row {
+    display: flex;
+    gap: 5px; /* Отступы между элементами */
+    align-items: center; /* Выравнивание по центру по вертикали */
+}
+
+/* Разметка для меток и элементов ввода */
+#log-export label {
+    font-size: 16px;
+}
+
+#log-export input[type="date"], 
+#log-export select {
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    max-width: 150px;
+    margin-right: 20px; /* Добавляем отступ справа */
+}
+
+#export-logs-btn {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+#export-logs-btn:hover {
+    background-color: #218838;
+}

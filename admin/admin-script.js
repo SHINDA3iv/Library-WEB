@@ -166,7 +166,7 @@ async function loadLogs(page) {
             row.innerHTML = `
                 <td>${log.timestamp}</td>
                 <td>${log.action}</td>
-                <td>${log.userId}</td>
+                <td>${log.user}</td>
             `;
             logTableBody.appendChild(row);
         });
@@ -210,10 +210,59 @@ export function openTab(tabName) {
     document.querySelector(`.tab-button[onclick="openTab('${tabName}')"]`).classList.add('active');
 }
 
+document.getElementById('export-logs-btn').addEventListener('click', async () => {
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
+    const format = document.getElementById('file-format').value;
+
+    if (!startDate || !endDate) {
+        consoleError('Необходимо указать начальную и конечную дату');
+        return;
+    }
+
+    try {
+        const authToken = localStorage.getItem('authToken');
+        const response = await fetch(`/admin/logs/export?start=${startDate}&end=${endDate}&format=${format}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Ошибка экспорта: ${response.statusText}`);
+        }
+
+        const blob = await response.blob();
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `logs_${startDate}_${endDate}.${format}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch (error) {
+        consoleError('Ошибка при скачивании логов: ' + error.message);
+    }
+});
+
+
+function makeDates() {
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    startDateInput.value = firstDay.toISOString().split('T')[0];
+    endDateInput.value = lastDay.toISOString().split('T')[0];
+}
+
 domContentLoaded(document, () => {
     loadFiles(currentPage);
     loadDownloadRanking(rankingCurrentPage);
     loadLogs(logCurrentPage);
+    makeDates();
 });
 
 window.openTab = openTab;
