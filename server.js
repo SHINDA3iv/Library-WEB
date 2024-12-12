@@ -583,7 +583,7 @@ app.post('/login', async (req, res) => {
             { expiresIn: '1h' }
         );        
         
-        logAction(user[0].user_id, `Авторизация пользователя ${username} : ID ${result[0].user_id}`);
+        logAction(user[0].user_id, `Авторизация пользователя ${username} : ID ${user[0].user_id}`);
 
         res.json({ token });
     } catch (error) {
